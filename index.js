@@ -5,6 +5,7 @@ ffmpeg.setFfmpegPath(ffmpegPath);
 const Discord = require("discord.js");
 const ytdl = require("ytdl-core");
 const { prefix, token } = require("./config.json");
+const audio_catalog = require("./audio_catalog.json");
 
 const client = new Discord.Client();
 
@@ -65,11 +66,8 @@ async function execute(message, serverQueue) {
         );
     }
 
-    const songInfo = await ytdl.getInfo(args[1]);
-    const song = {
-        title: songInfo.videoDetails.title,
-        url: songInfo.videoDetails.video_url,
-    };
+
+    const song = getMemeFile(args[1]);
 
     if (!serverQueue) {
         const queueContruct = {
@@ -97,7 +95,7 @@ async function execute(message, serverQueue) {
     } else {
         serverQueue.songs.push(song);
         return message.channel.send(
-            `${song.title} has been added to the queue!`
+            `${song.alias} has been added to the queue!`
         );
     }
 }
@@ -134,14 +132,24 @@ function play(guild, song) {
     }
 
     const dispatcher = serverQueue.connection
-        .play(ytdl(song.url))
+        .play(`${__dirname}/memes_audio/${song.file}`)
         .on("finish", () => {
             serverQueue.songs.shift();
             play(guild, serverQueue.songs[0]);
         })
         .on("error", (error) => console.error(error));
     dispatcher.setVolumeLogarithmic(serverQueue.volume / 5);
-    serverQueue.textChannel.send(`Start playing: **${song.title}**`);
+    serverQueue.textChannel.send(`Start playing: **${song.alias}**`);
+}
+
+function getMemeFile(alias) {
+    const audio = audio_catalog.find(audio => audio.alias === alias);
+
+    if (audio && !audio.file) {
+        throw new Error("Não existe esse audio de meme");
+    }
+
+    return audio
 }
 
 client.login(token);
