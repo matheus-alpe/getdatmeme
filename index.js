@@ -3,7 +3,12 @@ const ffmpeg = require("fluent-ffmpeg");
 ffmpeg.setFfmpegPath(ffmpegPath);
 
 const Discord = require("discord.js");
-const ytdl = require("ytdl-core");
+
+const { readdir } = require("fs");
+
+
+const { ScissorsMe } = require('./ScissorMe.js');
+
 const { prefix, token } = require("./config.json");
 const audio_catalog = require("./audio_catalog.json");
 
@@ -28,8 +33,9 @@ client.on("message", async (message) => {
     if (!message.content.startsWith(prefix)) return;
 
     const serverQueue = queue.get(message.guild.id);
-
-    if (message.content.startsWith(`${prefix}play`)) {
+    console.log(message.content);
+    console.log(checkAudio(message.content))
+    if (message.content.startsWith(prefix) && checkAudio(message.content)) {
         execute(message, serverQueue);
         return;
     } else if (message.content.startsWith(`${prefix}skip`)) {
@@ -40,12 +46,16 @@ client.on("message", async (message) => {
         return;
     } else if (message.content.startsWith(`${prefix}20g`)) {
         return message.channel.send("Ta brincando com minha cara né?!!!!!");
+    } else if (message.content.startsWith(`${prefix}setup`)) {
+        downloadAudio();
+        return message.channel.send("fazendo setup");
     } else {
         message.channel.send("You need to enter a valid command!");
     }
 });
 
 async function execute(message, serverQueue) {
+    const cmd = message.content.substring(1);
     const args = message.content.split(" ");
 
     const voiceChannel = message.member.voice.channel;
@@ -60,14 +70,7 @@ async function execute(message, serverQueue) {
         );
     }
 
-    if (!args[1]) {
-        return message.channel.send(
-            "You need pass me a URL video."
-        );
-    }
-
-
-    const song = getMemeFile(args[1]);
+    const song = getMemeFile(cmd);
 
     if (!serverQueue) {
         const queueContruct = {
@@ -142,13 +145,23 @@ function play(guild, song) {
     serverQueue.textChannel.send(`Start playing: **${song.alias}**`);
 }
 
+function checkAudio(cmd) {
+    const messageAlias = cmd.substring(1);
+    return Boolean(audio_catalog.find(({ alias }) => alias === messageAlias));
+}
+
+function downloadAudio() {
+    audio_catalog.forEach(audio => {
+        console.log(`baixando ${audio.alias}`);
+        new ScissorsMe(`https://www.youtube.com/watch?v=${audio._id}`, audio.time.start, audio.time.end);
+    });
+}
+
 function getMemeFile(alias) {
     const audio = audio_catalog.find(audio => audio.alias === alias);
-
     if (audio && !audio.file) {
         throw new Error("Não existe esse audio de meme");
     }
-
     return audio
 }
 
