@@ -4,6 +4,8 @@ ffmpeg.setFfmpegPath(ffmpegPath);
 
 const Discord = require("discord.js");
 
+const { readdirSync } = require('fs');
+
 const { ScissorsMe } = require('./ScissorMe.js');
 
 const { prefix, token } = require("./config.json");
@@ -151,15 +153,22 @@ function listMemes() {
         .sort();
 }
 
+function getDownloadedAudios() {
+    return readdirSync(`${__dirname}/memes_audio`);
+    
+}
 function checkAudio(cmd) {
     const messageAlias = cmd.substring(1);
     return Boolean(audio_catalog.find(({ alias }) => alias === messageAlias));
 }
 
 function downloadAudio() {
+    const preDownloadedAudios = getDownloadedAudios();
     audio_catalog.forEach(audio => {
-        console.log(`baixando ${audio.alias}`);
-        new ScissorsMe(`https://www.youtube.com/watch?v=${audio._id}`, audio.time.start, audio.time.end);
+        if (!preDownloadedAudios.includes(audio.file)) {
+            console.log(`baixando ${audio.alias}`);
+            new ScissorsMe(`https://www.youtube.com/watch?v=${audio._id}`, audio.time.start, audio.time.end);
+        }
     });
 }
 
