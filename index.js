@@ -4,9 +4,6 @@ ffmpeg.setFfmpegPath(ffmpegPath);
 
 const Discord = require("discord.js");
 
-const { readdir } = require("fs");
-
-
 const { ScissorsMe } = require('./ScissorMe.js');
 
 const { prefix, token } = require("./config.json");
@@ -49,6 +46,9 @@ client.on("message", async (message) => {
     } else if (message.content.startsWith(`${prefix}setup`)) {
         downloadAudio();
         return message.channel.send("fazendo setup");
+    } else if (message.content.startsWith(`${prefix}list`)) {
+        const audios = listMemes();
+        return message.channel.send(audios.join('\n'));
     } else {
         message.channel.send("You need to enter a valid command!");
     }
@@ -143,6 +143,10 @@ function play(guild, song) {
         .on("error", (error) => console.error(error));
     dispatcher.setVolumeLogarithmic(serverQueue.volume / 5);
     serverQueue.textChannel.send(`Start playing: **${song.alias}**`);
+}
+
+function listMemes() {
+    return audio_catalog.map(audio => `?${audio.alias}`);
 }
 
 function checkAudio(cmd) {
