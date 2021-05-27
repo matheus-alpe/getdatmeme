@@ -146,7 +146,9 @@ function play(guild, song) {
 }
 
 function listMemes() {
-    return audio_catalog.map(audio => `?${audio.alias}`);
+    return audio_catalog
+        .map(audio => `?${audio.alias}`)
+        .sort();
 }
 
 function checkAudio(cmd) {
