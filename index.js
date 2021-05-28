@@ -9,7 +9,12 @@ const { readdirSync } = require('fs');
 const { ScissorsMe } = require('./ScissorMe.js');
 
 const { prefix, token } = require("./config.json");
-const audio_catalog = require("./audio_catalog.json");
+const audio_catalog = require("./constants/audio_catalog.json");
+
+const WRONG_CMD_MESSAGES = [
+    's0eP7S3BIxs',
+    '6GfqT-HKsY8'
+]
 
 const client = new Discord.Client();
 
@@ -51,14 +56,20 @@ client.on("message", async (message) => {
     } else if (message.content.startsWith(`${prefix}list`)) {
         const audios = listMemes();
         return message.channel.send(audios.join('\n'));
-    } else {
-        message.channel.send("You need to enter a valid command!");
+    } else if (message.content.startsWith(`${prefix}new`)) {
+        return message.channel.send("isso ainda precisa ser implementado");
+    }
+    else {
+        const errorMessage = WRONG_CMD_MESSAGES[Math.floor(Math.random() * WRONG_CMD_MESSAGES.length)]
+        const audio = audio_catalog.find(audio => audio._id === errorMessage);
+        message.content = `?${audio.alias}`;
+        execute(message, serverQueue);
+        message.channel.send('You need to pass a valid command.');
     }
 });
 
 async function execute(message, serverQueue) {
     const cmd = message.content.substring(1);
-    const args = message.content.split(" ");
 
     const voiceChannel = message.member.voice.channel;
     if (!voiceChannel)
