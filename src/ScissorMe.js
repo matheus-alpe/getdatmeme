@@ -7,8 +7,6 @@ const { existsSync, mkdirSync, unlink } = require("fs");
 const ytdl = require("ytdl-core");
 const { cut } = require("mp3-cutter");
 
-
-
 class ScissorsMe {
   constructor(url, start = 0, end) {
     if (!url) {
