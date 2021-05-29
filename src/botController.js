@@ -1,35 +1,60 @@
-const { readdirSync } = require('fs');
-const { ScissorsMe } = require('./ScissorMe.js');
+
+
 const audio_catalog = require("./constants/audio_catalog.json");
+const { getNormalizedCommand, getMemeFile, checkAudio, downloadAudio,getMemesFolder } = require("./utils")
+const errors = require('./utils/errors')
 
 const WRONG_CMD_MESSAGES = [
   's0eP7S3BIxs',
   '6GfqT-HKsY8'
 ]
-
-export class BotController {
-  queue = new Map();
-
+module.exports = class BotController {
   constructor(prefix) {
-    this.prefix = prefix
+    this.prefix = prefix;
+    this.queue = new Map();
   }
 
-  async execute(message, serverQueue) {
-    const cmd = message.content.substring(1);
+  handleMessage(message) {
+    if (message.author.bot) return;
+    if (!message.content.startsWith(this.prefix)) return;
+
+    const serverQueue = this.queue.get(message.guild.id);
+
+    const normalizedCommand = getNormalizedCommand(message.content);
+
+    if (checkAudio(normalizedCommand)) {
+      this._execute(message, serverQueue);
+    } else {
+      var commandsMap = {
+        'setup': () => downloadAudio(message),
+        'list': () => this._listMemes(message),
+        'skip': () => this._skip(message, serverQueue),
+        'stop': () => this._stop(message, serverQueue),
+        '20g': () => message.channel.send("Ta brincando com minha cara né?!!!!!"),
+        'new': () => message.channel.send("isso ainda precisa ser implementado"),
+        'default': () => this._defaultErrorMessage(message, serverQueue)
+      }
+
+      let handler = commandsMap[normalizedCommand];
+      handler = handler ? handler : commandsMap['default'];
+      handler();
+    }
+  }
+
+  async _execute(message, serverQueue) {
+    const normalizedCommand = getNormalizedCommand(message.content);
 
     const voiceChannel = message.member.voice.channel;
-    if (!voiceChannel)
-      return message.channel.send(
-        "You need to be in a voice channel to play music!"
-      );
-    const permissions = voiceChannel.permissionsFor(message.client.user);
-    if (!permissions.has("CONNECT") || !permissions.has("SPEAK")) {
-      return message.channel.send(
-        "I need the permissions to join and speak in your voice channel!"
-      );
+    if (!voiceChannel) {
+      errors.needToBeInAVoiceChannelError(message);
     }
 
-    const song = getMemeFile(cmd);
+    const permissions = voiceChannel.permissionsFor(message.client.user);
+    if (!permissions.has("CONNECT") || !permissions.has("SPEAK")) {
+      errors.botWithoutPermissionError(message);
+    }
+
+    const song = getMemeFile(normalizedCommand);
 
     if (!serverQueue) {
       const queueContruct = {
@@ -41,17 +66,17 @@ export class BotController {
         playing: true,
       };
 
-      queue.set(message.guild.id, queueContruct);
+      this.queue.set(message.guild.id, queueContruct);
 
       queueContruct.songs.push(song);
 
       try {
         var connection = await voiceChannel.join();
         queueContruct.connection = connection;
-        play(message.guild, queueContruct.songs[0]);
+        this._play(message.guild, queueContruct.songs[0]);
       } catch (err) {
         console.log(err);
-        queue.delete(message.guild.id);
+        this.queue.delete(message.guild.id);
         return message.channel.send(err);
       }
     } else {
@@ -62,128 +87,66 @@ export class BotController {
     }
   }
 
-  skip(message, serverQueue) {
-    if (!message.member.voice.channel)
-      return message.channel.send(
-        "You have to be in a voice channel to stop the music!"
-      );
-    if (!serverQueue)
-      return message.channel.send("There is no song that I could skip!");
+  _skip(message, serverQueue) {
+    if (!message.member.voice.channel) {
+      errors.needToBeInAVoiceChannelError(message);
+    } else if (!serverQueue) {
+      errors.anySongToSkipError(message);
+    }
     serverQueue.connection.dispatcher.end();
   }
 
-  stop(message, serverQueue) {
-    if (!message.member.voice.channel)
-      return message.channel.send(
-        "You have to be in a voice channel to stop the music!"
-      );
-
-    if (!serverQueue)
-      return message.channel.send("There is no song that I could stop!");
+  _stop(message, serverQueue) {
+    if (!message.member.voice.channel) {
+      errors.needToBeInAVoiceChannelError(message);
+    } else if (!serverQueue) {
+      errors.anySongToSkipError(message);
+    }
 
     serverQueue.songs = [];
     serverQueue.connection.dispatcher.end();
   }
 
-  play(guild, song) {
-    const serverQueue = queue.get(guild.id);
+  _play(guild, song) {
+    const serverQueue = this.queue.get(guild.id);
     if (!song) {
       serverQueue.voiceChannel.leave();
-      queue.delete(guild.id);
+      this.queue.delete(guild.id);
       return;
     }
 
     const dispatcher = serverQueue.connection
-      .play(`${__dirname}/memes_audio/${song.file}`)
+      .play(`${getMemesFolder()}/${song.file}`)
       .on("finish", () => {
         serverQueue.songs.shift();
-        play(guild, serverQueue.songs[0]);
+        this._play(guild, serverQueue.songs[0]);
       })
       .on("error", (error) => console.error(error));
     dispatcher.setVolumeLogarithmic(serverQueue.volume / 5);
     serverQueue.textChannel.send(`Start playing: **${song.alias}**`);
   }
 
-  listMemes() {
-    return audio_catalog
-      .map(audio => `?${audio.alias}`)
-      .sort();
-  }
-
-  getDownloadedAudios() {
-    return readdirSync(`${__dirname}/memes_audio`);
-  }
-
-  checkAudio(cmd) {
-    const messageAlias = cmd.substring(1);
-    return Boolean(audio_catalog.find(({ alias }) => alias === messageAlias));
-  }
-
-  downloadAudio() {
-    const preDownloadedAudios = getDownloadedAudios();
-    audio_catalog.forEach(audio => {
-      if (!preDownloadedAudios.includes(audio.file)) {
-        console.log(`baixando ${audio.alias}`);
-        new ScissorsMe(`https://www.youtube.com/watch?v=${audio._id}`, audio.time.start, audio.time.end);
-      }
-    });
-  }
-
-  getMemeFile(alias) {
-    const audio = audio_catalog.find(audio => audio.alias === alias);
-    if (audio && !audio.file) {
-      throw new Error("Não existe esse audio de meme");
+  /**
+   * Send a message showing all memes on Discord.
+   */
+  _listMemes(message) {
+    /**
+     * Get all memes of static catalog.
+     * @returns {string[]}
+     */
+    const getAllMemes = () => {
+      return audio_catalog
+        .map(audio => `${this.prefix}${audio.alias}`)
+        .sort();
     }
-    return audio
+    message.channel.send(getAllMemes().join('\n'));
   }
 
-  handleMessage(message) {
-    if (message.author.bot) return;
-    if (!message.content.startsWith(prefix)) return;
-
-    const serverQueue = queue.get(message.guild.id);
-    console.log(message.content);
-    console.log(checkAudio(message.content))
-
-    if (checkAudio(message.content)) {
-      execute(message, serverQueue);
-      return;
-    }
-
-    var commandsMap = {
-      'skip': () => {
-        skip(message, serverQueue)
-        return
-      },
-      'stop': () => {
-        stop(message, serverQueue);
-        return;
-      },
-      '20g': () => {
-        return message.channel.send("Ta brincando com minha cara né?!!!!!");
-      },
-      'setup': () => {
-        controller.downloadAudio();
-        return message.channel.send("fazendo setup");
-      },
-      'list': () => {
-        const audios = controller.listMemes();
-        return message.channel.send(audios.join('\n'));
-      },
-      'new': () => {
-        return message.channel.send("isso ainda precisa ser implementado");
-      },
-      'default': () => {
-        const errorMessage = WRONG_CMD_MESSAGES[Math.floor(Math.random() * WRONG_CMD_MESSAGES.length)]
-        const audio = audio_catalog.find(audio => audio._id === errorMessage);
-        message.content = `?${audio.alias}`;
-        controller.execute(message, serverQueue);
-        message.channel.send('You need to pass a valid command.');
-      }
-    }
-
-    const handler = commandsMap[message.content];
-    handler = handler ? handler : commandsMap['default']
-    handler();
+  _defaultErrorMessage(message, serverQueue) {
+    const errorMessage = WRONG_CMD_MESSAGES[Math.floor(Math.random() * WRONG_CMD_MESSAGES.length)]
+    const audio = audio_catalog.find(audio => audio._id === errorMessage);
+    message.content = `?${audio.alias}`;
+    this._execute(message, serverQueue);
+    errors.invalidCommandError(message);
   }
 }
