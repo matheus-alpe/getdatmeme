@@ -1,8 +1,9 @@
 
 
 const audio_catalog = require("./constants/audio_catalog.json");
-const { getNormalizedCommand, getMemeFile, checkAudio, downloadAudio,getMemesFolder } = require("./utils")
+const { getNormalizedCommand, getMemeFile, checkAudio, downloadAudio, getMemesFolder, extractVideoId, saveJson } = require("./utils")
 const errors = require('./utils/errors')
+const { cutVideo } = require('./utils/ScissorMe');
 
 const WRONG_CMD_MESSAGES = [
   's0eP7S3BIxs',
@@ -21,8 +22,8 @@ module.exports = class BotController {
     const serverQueue = this.queue.get(message.guild.id);
 
     const normalizedCommand = getNormalizedCommand(message.content);
-
-    if (checkAudio(normalizedCommand)) {
+    const [command, ...args] = normalizedCommand.split(' ');
+    if (checkAudio(command)) {
       this._execute(message, serverQueue);
     } else {
       const commandsMap = {
@@ -31,11 +32,11 @@ module.exports = class BotController {
         'skip': () => this._skip(message, serverQueue),
         'stop': () => this._stop(message, serverQueue),
         '20g': () => message.channel.send("Ta brincando com minha cara né?!!!!!"),
-        'new': () => message.channel.send("isso ainda precisa ser implementado"),
+        'new': () => {this._addNewMeme(message, args)},
         'default': () => this._defaultErrorMessage(message, serverQueue)
       }
 
-      let handler = commandsMap[normalizedCommand];
+      let handler = commandsMap[command];
       handler = handler ? handler : commandsMap['default'];
       handler();
     }
@@ -148,5 +149,32 @@ module.exports = class BotController {
     message.content = `?${audio.alias}`;
     this._execute(message, serverQueue);
     errors.invalidCommandError(message);
+  }
+
+  _addNewMeme(message, args) {
+    if (args.length < 3 || args.length < 4) {
+      message.channel.send("precisa passar os comandos certos")
+      return;
+    }
+    const [url, alias, start, end] = args
+    const id = extractVideoId(url);
+    if (!id) {
+      message.channel.send('Não encontramos o vídeo');
+      return;
+    }
+    const newMeme = {
+      _id: id,
+      alias,
+      file: `${id}.mp3`,
+      time: {
+          start: Number(start),
+          end: Number(end)
+      }
+    };
+    audio_catalog.push(newMeme);
+
+    saveJson(`${__basedir}/constants/audio_catalog.json`, audio_catalog)
+    cutVideo(url, Number(start), Number(end), __basedir);
+    message.channel.send('olha o bixo vinu');
   }
 }
