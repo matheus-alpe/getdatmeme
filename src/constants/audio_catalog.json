@@ -58,8 +58,8 @@
         "alias": "caminhao",
         "file": "_z1uo1HxnGg.mp3",
         "time": {
-            "start": 139,
-            "end": 127
+            "start": 140,
+            "end": 147
         }
     },
     {
@@ -213,6 +213,15 @@
         "time": {
             "start": 0,
             "end": null
+        }
+    },
+    {
+        "_id": "ltKc0pnx1tI",
+        "alias": "naovaidar",
+        "file": "ltKc0pnx1tI.mp3",
+        "time": {
+            "start": 2,
+            "end": 4
         }
     }
 ]
