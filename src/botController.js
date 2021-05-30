@@ -1,7 +1,8 @@
 
 
 const audio_catalog = require("./constants/audio_catalog.json");
-const { getNormalizedCommand, getMemeFile, checkAudio, downloadAudio, getMemesFolder, extractVideoId, saveJson } = require("./utils")
+const { getNormalizedCommand, checkAudio, downloadAudio, getMemesFolder,extractVideoId, } = require("./utils")
+const {saveMeme, getMeme} = require('./utils/firebase')
 const errors = require('./utils/errors')
 const { cutVideo } = require('./utils/ScissorMe');
 
@@ -15,7 +16,7 @@ module.exports = class BotController {
     this.queue = new Map();
   }
 
-  handleMessage(message) {
+  async handleMessage(message) {
     if (message.author.bot) return;
     if (!message.content.startsWith(this.prefix)) return;
 
@@ -23,8 +24,9 @@ module.exports = class BotController {
 
     const normalizedCommand = getNormalizedCommand(message.content);
     const [command, ...args] = normalizedCommand.split(' ');
-    if (checkAudio(command)) {
-      this._execute(message, serverQueue);
+    const song = await getMeme(normalizedCommand);
+    if (song) {
+      this._execute(message, serverQueue, song);
     } else {
       const commandsMap = {
         'setup': () => downloadAudio(message),
@@ -42,7 +44,7 @@ module.exports = class BotController {
     }
   }
 
-  async _execute(message, serverQueue) {
+  async _execute(message, serverQueue, song) {
     const normalizedCommand = getNormalizedCommand(message.content);
 
     const voiceChannel = message.member.voice.channel;
@@ -54,8 +56,6 @@ module.exports = class BotController {
     if (!permissions.has("CONNECT") || !permissions.has("SPEAK")) {
       errors.botWithoutPermissionError(message);
     }
-
-    const song = getMemeFile(normalizedCommand);
 
     if (!serverQueue) {
       const queueContruct = {
@@ -162,18 +162,8 @@ module.exports = class BotController {
       message.channel.send('Não encontramos o vídeo');
       return;
     }
-    const newMeme = {
-      _id: id,
-      alias,
-      file: `${id}.mp3`,
-      time: {
-          start: Number(start),
-          end: Number(end)
-      }
-    };
-    audio_catalog.push(newMeme);
-
-    saveJson(`${__basedir}/constants/audio_catalog.json`, audio_catalog)
+    
+    saveMeme(alias, id, start, end)
     cutVideo(url, Number(start), Number(end), __basedir);
     message.channel.send('olha o bixo vinu');
   }

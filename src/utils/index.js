@@ -4,6 +4,11 @@ const { cutVideo } = require('./ScissorMe.js');
 const { readdirSync } = require('fs');
 const { ScissorsMe } = require('../ScissormeOld')
 
+function extractVideoId(url){
+  const matches = url.match(/\?v=(.*)/)
+  return matches && matches[1]
+}
+
 /**
  * Return a string escaping all characters.
  * @param {string} string
@@ -29,16 +34,8 @@ function getNormalizedCommand(command) {
 
   const regex = new RegExp(`^${escapedPrefix}`, 'g')
   return command.replace(regex, '')
-}
 
-function getMemeFile(alias) {
-  const audio = audio_catalog.find(audio => audio.alias === alias);
-  if (audio && !audio.file) {
-    throw new Error("Não existe esse audio de meme");
-  }
-  return audio
 }
-
 /**
  * Return the meme folder;
  * @returns {string}
@@ -49,10 +46,6 @@ function getMemesFolder() {
 
 function _getDownloadedAudios() {
   return readdirSync(getMemesFolder());
-}
-
-function checkAudio(normalizedCommand) {
-  return Boolean(audio_catalog.find(({ alias }) => alias === normalizedCommand));
 }
 
 function downloadAudio(message) {
@@ -68,9 +61,8 @@ function downloadAudio(message) {
 }
 
 module.exports = {
-  getNormalizedCommand,
-  getMemeFile,
-  checkAudio,
   downloadAudio,
-  getMemesFolder
+  getMemesFolder,
+  extractVideoId,
+  getNormalizedCommand
 }
