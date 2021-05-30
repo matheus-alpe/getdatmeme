@@ -56,7 +56,6 @@ function cutVideo(url, start = 0, end, basePath) {
     if (_endTime) {
       options.end = _endTime;
     }
-
     cut(options);
     unlink(options.src, (err) => { if (err) throw err });
   }

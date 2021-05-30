@@ -2,6 +2,7 @@ const { prefix } = require("../config.json");
 const audio_catalog = require("../constants/audio_catalog.json");
 const { cutVideo } = require('./ScissorMe.js');
 const { readdirSync } = require('fs');
+const { ScissorsMe } = require('../ScissormeOld')
 
 /**
  * Return a string escaping all characters.
@@ -59,7 +60,8 @@ function downloadAudio(message) {
   audio_catalog.forEach(audio => {
     if (!preDownloadedAudios.includes(audio.file)) {
       console.log(`baixando ${audio.alias}`);
-      cutVideo(`https://www.youtube.com/watch?v=${audio._id}`, audio.time.start, audio.time.end, __basedir)
+      new ScissorsMe(`https://www.youtube.com/watch?v=${audio._id}`, audio.time.start, audio.time.end);
+      // cutVideo(`https://www.youtube.com/watch?v=${audio._id}`, audio.time.start, audio.time.end, __basedir)
     }
   });
   message.channel.send("fazendo setup");
