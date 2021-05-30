@@ -4,7 +4,10 @@
   "description": "A Discord bot that execute audio memes.",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node ./src/index.js",
+    "dev": "nodemon ./src/index.js",
+    "clean": "rm -rf ./src/memes_audio/* && rm -rf ./src/temp/*"
   },
   "keywords": [],
   "author": "",
@@ -15,7 +18,12 @@
     "discord.js": "^12.5.3",
     "ffmpeg": "^0.0.4",
     "ffmpeg-static": "^4.3.0",
+    "firebase": "^8.6.3",
     "fluent-ffmpeg": "^2.1.2",
+    "mp3-cutter": "^1.0.6",
     "ytdl-core": "^4.8.0"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.7"
   }
 }
