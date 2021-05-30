@@ -25,7 +25,7 @@ module.exports = class BotController {
     if (checkAudio(normalizedCommand)) {
       this._execute(message, serverQueue);
     } else {
-      var commandsMap = {
+      const commandsMap = {
         'setup': () => downloadAudio(message),
         'list': () => this._listMemes(message),
         'skip': () => this._skip(message, serverQueue),
@@ -71,7 +71,7 @@ module.exports = class BotController {
       queueContruct.songs.push(song);
 
       try {
-        var connection = await voiceChannel.join();
+        const connection = await voiceChannel.join();
         queueContruct.connection = connection;
         this._play(message.guild, queueContruct.songs[0]);
       } catch (err) {
