@@ -1,7 +1,7 @@
 const { prefix } = require("../config.json");
 const audio_catalog = require("../constants/audio_catalog.json");
 const { cutVideo } = require('./ScissorMe.js');
-const { readdirSync } = require('fs');
+const { readdirSync, writeFileSync } = require('fs');
 const { ScissorsMe } = require('../ScissormeOld')
 
 /**
@@ -31,8 +31,8 @@ function getNormalizedCommand(command) {
   return command.replace(regex, '')
 }
 
-function getMemeFile(alias) {
-  const audio = audio_catalog.find(audio => audio.alias === alias);
+function getMemeFile(command) {
+  const audio = audio_catalog.find(({ _id }) => _id === command);
   if (audio && !audio.file) {
     throw new Error("Não existe esse audio de meme");
   }
@@ -52,15 +52,25 @@ function _getDownloadedAudios() {
 }
 
 function checkAudio(normalizedCommand) {
-  return Boolean(audio_catalog.find(({ alias }) => alias === normalizedCommand));
+  return Boolean(audio_catalog.find(({ _id }) => _id === normalizedCommand));
+}
+
+function extractVideoId(url){
+  const matches = url.match(/\?v=(.*)/)
+  return matches && matches[1]
+}
+
+function saveJson(path, content) {
+  console.log(1);
+  writeFileSync(path, JSON.stringify(content, null, 4));
 }
 
 function downloadAudio(message) {
   const preDownloadedAudios = _getDownloadedAudios();
   audio_catalog.forEach(audio => {
     if (!preDownloadedAudios.includes(audio.file)) {
-      console.log(`baixando ${audio.alias}`);
-      new ScissorsMe(`https://www.youtube.com/watch?v=${audio._id}`, audio.time.start, audio.time.end);
+      console.log(`baixando ${audio._id}`);
+      new ScissorsMe(`https://www.youtube.com/watch?v=${audio.url}`, audio.time.start, audio.time.end, audio._id);
       // cutVideo(`https://www.youtube.com/watch?v=${audio._id}`, audio.time.start, audio.time.end, __basedir)
     }
   });
@@ -72,5 +82,7 @@ module.exports = {
   getMemeFile,
   checkAudio,
   downloadAudio,
-  getMemesFolder
+  getMemesFolder,
+  extractVideoId,
+  saveJson
 }

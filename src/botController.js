@@ -3,11 +3,12 @@
 const audio_catalog = require("./constants/audio_catalog.json");
 const { getNormalizedCommand, getMemeFile, checkAudio, downloadAudio, getMemesFolder, extractVideoId, saveJson } = require("./utils")
 const errors = require('./utils/errors')
-const { cutVideo } = require('./utils/ScissorMe');
+// const { cutVideo } = require('./utils/ScissorMe');
+const { ScissorsMe } = require('../src/ScissormeOld');
 
 const WRONG_CMD_MESSAGES = [
-  's0eP7S3BIxs',
-  '6GfqT-HKsY8'
+  'erou',
+  'naoconsegue'
 ]
 module.exports = class BotController {
   constructor(prefix) {
@@ -83,7 +84,7 @@ module.exports = class BotController {
     } else {
       serverQueue.songs.push(song);
       return message.channel.send(
-        `${song.alias} has been added to the queue!`
+        `${song._id} has been added to the queue!`
       );
     }
   }
@@ -124,7 +125,7 @@ module.exports = class BotController {
       })
       .on("error", (error) => console.error(error));
     dispatcher.setVolumeLogarithmic(serverQueue.volume / 5);
-    serverQueue.textChannel.send(`Start playing: **${song.alias}**`);
+    serverQueue.textChannel.send(`Start playing: **${song._id}**`);
   }
 
   /**
@@ -137,7 +138,7 @@ module.exports = class BotController {
      */
     const getAllMemes = () => {
       return audio_catalog
-        .map(audio => `${this.prefix}${audio.alias}`)
+        .map(audio => `${this.prefix}${audio._id}`)
         .sort();
     }
     message.channel.send(getAllMemes().join('\n'));
@@ -146,7 +147,7 @@ module.exports = class BotController {
   _defaultErrorMessage(message, serverQueue) {
     const errorMessage = WRONG_CMD_MESSAGES[Math.floor(Math.random() * WRONG_CMD_MESSAGES.length)]
     const audio = audio_catalog.find(audio => audio._id === errorMessage);
-    message.content = `?${audio.alias}`;
+    message.content = `?${audio._id}`;
     this._execute(message, serverQueue);
     errors.invalidCommandError(message);
   }
@@ -156,16 +157,16 @@ module.exports = class BotController {
       message.channel.send("precisa passar os comandos certos")
       return;
     }
-    const [url, alias, start, end] = args
+    const [url, command, start, end] = args
     const id = extractVideoId(url);
     if (!id) {
       message.channel.send('Não encontramos o vídeo');
       return;
     }
     const newMeme = {
-      _id: id,
-      alias,
-      file: `${id}.mp3`,
+      url: id,
+      _id: command,
+      file: `${command}.mp3`,
       time: {
           start: Number(start),
           end: Number(end)
@@ -174,7 +175,8 @@ module.exports = class BotController {
     audio_catalog.push(newMeme);
 
     saveJson(`${__basedir}/constants/audio_catalog.json`, audio_catalog)
-    cutVideo(url, Number(start), Number(end), __basedir);
+    new ScissorsMe(url, newMeme.time.start, newMeme.time.end, command);
+    // cutVideo(url, Number(start), Number(end), __basedir, id);
     message.channel.send('olha o bixo vinu');
   }
 }

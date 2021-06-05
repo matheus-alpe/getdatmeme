@@ -7,7 +7,7 @@ const { existsSync, mkdirSync, unlink } = require("fs");
 const ytdl = require("ytdl-core");
 const { cut } = require("mp3-cutter");
 
-function cutVideo(url, start = 0, end, basePath) {
+function cutVideo(url, start = 0, end, basePath, id) {
   const makeDirectories = () => {
     if (!existsSync(_tempPath)) {
       mkdirSync(_tempPath);
@@ -64,7 +64,8 @@ function cutVideo(url, start = 0, end, basePath) {
     console.error("Missing `URL` parameter.");
   }
 
-  let _id = url.split("?v=")[1];
+  // let _id = url.split("?v=")[1];
+  let _id = id;
   let _startTime = start;
   let _endTime = end;
   let _tempPath = `${basePath}/temp`;

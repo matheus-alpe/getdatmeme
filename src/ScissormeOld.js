@@ -9,12 +9,13 @@ const { cut } = require("mp3-cutter");
 
 
 class ScissorsMe {
-  constructor(url, start = 0, end) {
+  constructor(url, start = 0, end, id) {
     if (!url) {
       console.error("Missing `URL` parameter.");
     }
 
-    this._id = url.split("?v=")[1];
+    this._id = id;
+    this._url = url;
     this._startTime = start;
     this._endTime = end;
     this._tempPath = `${__dirname}/temp`;
@@ -35,7 +36,7 @@ class ScissorsMe {
 
   async getVideo() {
     try {
-      let stream = await ytdl(this._id, {
+      let stream = await ytdl(this._url, {
         quality: "highestaudio",
       });
 
