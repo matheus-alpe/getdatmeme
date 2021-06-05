@@ -1,14 +1,15 @@
 
 
 const audio_catalog = require("./constants/audio_catalog.json");
-const { getNormalizedCommand, getMemeFile, checkAudio, downloadAudio, getMemesFolder, extractVideoId, saveJson } = require("./utils")
+const { getNormalizedCommand, getMemeFile, checkAudio, downloadAudio, getMemesFolder, extractVideoId, saveJson, pushCatalog } = require("./utils")
 const errors = require('./utils/errors')
 // const { cutVideo } = require('./utils/ScissorMe');
 const { ScissorsMe } = require('../src/ScissormeOld');
 
 const WRONG_CMD_MESSAGES = [
   'erou',
-  'naoconsegue'
+  'naoconsegue',
+  'taburro'
 ]
 module.exports = class BotController {
   constructor(prefix) {
