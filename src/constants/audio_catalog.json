@@ -1,245 +1,308 @@
 [
     {
-        "_id": "OaeVieQRHRs",
-        "alias": "banido",
-        "file": "OaeVieQRHRs.mp3",
+        "url": "OaeVieQRHRs",
+        "_id": "banido",
+        "file": "banido.mp3",
         "time": {
             "start": 9,
             "end": 13
         }
     },
     {
-        "_id": "QWHEefBwdV4",
-        "alias": "boanoitebruno",
-        "file": "QWHEefBwdV4.mp3",
+        "url": "QWHEefBwdV4",
+        "_id": "boanoitebruno",
+        "file": "boanoitebruno.mp3",
         "time": {
             "start": null,
             "end": null
         }
     },
     {
-        "_id": "joIwZGN2-8Q",
-        "alias": "osbotoesnao",
-        "file": "joIwZGN2-8Q.mp3",
+        "url": "joIwZGN2-8Q",
+        "_id": "osbotoesnao",
+        "file": "osbotoesnao.mp3",
         "time": {
             "start": 36,
             "end": 40
         }
     },
     {
-        "_id": "P6EFy2cADNM",
-        "alias": "nicholascage",
-        "file": "P6EFy2cADNM.mp3",
+        "url": "P6EFy2cADNM",
+        "_id": "nicholascage",
+        "file": "nicholascage.mp3",
         "time": {
             "start": null,
             "end": null
         }
     },
     {
-        "_id": "LuXz8eVJmNs",
-        "alias": "nicholascageremix",
-        "file": "LuXz8eVJmNs.mp3",
+        "url": "LuXz8eVJmNs",
+        "_id": "nicholascageremix",
+        "file": "nicholascageremix.mp3",
         "time": {
             "start": null,
             "end": null
         }
     },
     {
-        "_id": "cax8viEl-Lw",
-        "alias": "vocegostamais",
-        "file": "cax8viEl-Lw.mp3",
+        "url": "cax8viEl-Lw",
+        "_id": "vocegostamais",
+        "file": "vocegostamais.mp3",
         "time": {
             "start": null,
             "end": null
         }
     },
     {
-        "_id": "_z1uo1HxnGg",
-        "alias": "caminhao",
-        "file": "_z1uo1HxnGg.mp3",
+        "url": "_z1uo1HxnGg",
+        "_id": "caminhao",
+        "file": "caminhao.mp3",
         "time": {
             "start": 140,
             "end": 147
         }
     },
     {
-        "_id": "qCBuDzYH8PE",
-        "alias": "meteoro",
-        "file": "qCBuDzYH8PE.mp3",
+        "url": "qCBuDzYH8PE",
+        "_id": "meteoro",
+        "file": "meteoro.mp3",
         "time": {
             "start": 3,
             "end": 6
         }
     },
     {
-        "_id": "9kCSkb_PVDw",
-        "alias": "nasceu",
-        "file": "9kCSkb_PVDw.mp3",
+        "url": "9kCSkb_PVDw",
+        "_id": "nasceu",
+        "file": "nasceu.mp3",
         "time": {
             "start": 0,
             "end": 16
         }
     },
     {
-        "_id": "gXVFoEpy10g",
-        "alias": "l2",
-        "file": "gXVFoEpy10g.mp3",
+        "url": "gXVFoEpy10g",
+        "_id": "l2",
+        "file": "l2.mp3",
         "time": {
             "start": null,
             "end": null
         }
     },
     {
-        "_id": "VKMw2it8dQY",
-        "alias": "yo",
-        "file": "VKMw2it8dQY.mp3",
+        "url": "VKMw2it8dQY",
+        "_id": "yo",
+        "file": "yo.mp3",
         "time": {
             "start": 0,
             "end": null
         }
     },
     {
-        "_id": "s0eP7S3BIxs",
-        "alias": "erou",
-        "file": "s0eP7S3BIxs.mp3",
+        "url": "s0eP7S3BIxs",
+        "_id": "erou",
+        "file": "erou.mp3",
         "time": {
             "start": 0,
             "end": null
         }
     },
     {
-        "_id": "6GfqT-HKsY8",
-        "alias": "naoconsegue",
-        "file": "6GfqT-HKsY8.mp3",
+        "url": "6GfqT-HKsY8",
+        "_id": "naoconsegue",
+        "file": "naoconsegue.mp3",
         "time": {
             "start": 1,
             "end": null
         }
     },
     {
-        "_id": "49EOEQoGm-A",
-        "alias": "emesmoe",
-        "file": "49EOEQoGm-A.mp3",
+        "url": "49EOEQoGm-A",
+        "_id": "emesmoe",
+        "file": "emesmoe.mp3",
         "time": {
             "start": 0,
             "end": null
         }
     },
     {
-        "_id": "IgQExxqppqg",
-        "alias": "naoentendi",
-        "file": "IgQExxqppqg.mp3",
+        "url": "IgQExxqppqg",
+        "_id": "naoentendi",
+        "file": "naoentendi.mp3",
         "time": {
             "start": 0,
             "end": null
         }
     },
     {
-        "_id": "iHPVRtpTl4A",
-        "alias": "oualek",
-        "file": "iHPVRtpTl4A.mp3",
+        "url": "iHPVRtpTl4A",
+        "_id": "oualek",
+        "file": "oualek.mp3",
         "time": {
             "start": 0,
             "end": null
         }
     },
     {
-        "_id": "w4b84ddXLoY",
-        "alias": "olhala",
-        "file": "w4b84ddXLoY.mp3",
+        "url": "w4b84ddXLoY",
+        "_id": "olhala",
+        "file": "olhala.mp3",
         "time": {
             "start": 56,
             "end": 59
         }
     },
     {
-        "_id": "HlYTKuED--M",
-        "alias": "porra",
-        "file": "HlYTKuED--M.mp3",
+        "url": "HlYTKuED--M",
+        "_id": "porra",
+        "file": "porra.mp3",
         "time": {
             "start": 68,
             "end": 70
         }
     },
     {
-        "_id": "6SW9s8QqneA",
-        "alias": "higor",
-        "file": "6SW9s8QqneA.mp3",
+        "url": "6SW9s8QqneA",
+        "_id": "higor",
+        "file": "higor.mp3",
         "time": {
             "start": 0,
             "end": null
         }
     },
     {
-        "_id": "fhkgNTmrXFY",
-        "alias": "higor2",
-        "file": "fhkgNTmrXFY.mp3",
+        "url": "fhkgNTmrXFY",
+        "_id": "higor2",
+        "file": "higor2.mp3",
         "time": {
             "start": 0,
             "end": null
         }
     },
     {
-        "_id": "2k0SmqbBIpQ",
-        "alias": "timetostop",
-        "file": "2k0SmqbBIpQ.mp3",
+        "url": "2k0SmqbBIpQ",
+        "_id": "timetostop",
+        "file": "timetostop.mp3",
         "time": {
             "start": 2,
             "end": 5
         }
     },
     {
-        "_id": "9Deg7VrpHbM",
-        "alias": "stop",
-        "file": "9Deg7VrpHbM.mp3",
+        "url": "9Deg7VrpHbM",
+        "_id": "stop",
+        "file": "stop.mp3",
         "time": {
             "start": 2,
             "end": null
         }
     },
     {
-        "_id": "d1IInFbV0dg",
-        "alias": "tchain",
-        "file": "d1IInFbV0dg.mp3",
+        "url": "d1IInFbV0dg",
+        "_id": "tchain",
+        "file": "tchain.mp3",
         "time": {
             "start": 6,
             "end": 19
         }
     },
     {
-        "_id": "0iwcsNG3y3Q",
-        "alias": "nicholascage2",
-        "file": "0iwcsNG3y3Q.mp3",
+        "url": "0iwcsNG3y3Q",
+        "_id": "nicholascage2",
+        "file": "nicholascage2.mp3",
         "time": {
             "start": 0,
             "end": null
         }
     },
     {
-        "_id": "ltKc0pnx1tI",
-        "alias": "naovaidar",
-        "file": "ltKc0pnx1tI.mp3",
+        "url": "ltKc0pnx1tI",
+        "_id": "naovaidar",
+        "file": "naovaidar.mp3",
         "time": {
             "start": 2,
             "end": 4
         }
     },
     {
-        "_id": "aEjTE4qVinE",
-        "alias": "eunaosei",
-        "file": "aEjTE4qVinE.mp3",
+        "url": "aEjTE4qVinE",
+        "_id": "eunaosei",
+        "file": "eunaosei.mp3",
         "time": {
             "start": 0,
             "end": 4
         }
     },
     {
-        "_id": "bP6khuJYF84",
-        "alias": "grito",
-        "file": "bP6khuJYF84.mp3",
+        "url": "bP6khuJYF84",
+        "_id": "grito",
+        "file": "grito.mp3",
         "time": {
             "start": 21,
             "end": 23
+        }
+    },
+    {
+        "url": "Ti3upA2JNg8",
+        "_id": "sasuke",
+        "file": "sasuke.mp3",
+        "time": {
+            "start": 2,
+            "end": 4
+        }
+    },
+    {
+        "url": "Ti3upA2JNg8",
+        "_id": "naruto",
+        "file": "naruto.mp3",
+        "time": {
+            "start": 0,
+            "end": 2
+        }
+    },
+    {
+        "url": "1UDYlkNZQcI",
+        "_id": "banido2",
+        "file": "banido2.mp3",
+        "time": {
+            "start": 0,
+            "end": 0
+        }
+    },
+    {
+        "url": "spcQ2jDym9k",
+        "_id": "boladeporra",
+        "file": "boladeporra.mp3",
+        "time": {
+            "start": 0,
+            "end": 2
+        }
+    },
+    {
+        "url": "MgY4oxGDwZE",
+        "_id": "comer",
+        "file": "comer.mp3",
+        "time": {
+            "start": 0,
+            "end": 5
+        }
+    },
+    {
+        "url": "xNE1Xo0pd-E",
+        "_id": "iai",
+        "file": "iai.mp3",
+        "time": {
+            "start": 12,
+            "end": 27
+        }
+    },
+    {
+        "url": "ZQxFJsPH84k",
+        "_id": "sounou",
+        "file": "sounou.mp3",
+        "time": {
+            "start": 12,
+            "end": 28
         }
     }
 ]
