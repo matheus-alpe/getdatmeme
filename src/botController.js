@@ -172,9 +172,8 @@ module.exports = class BotController {
           end: Number(end)
       }
     };
-    audio_catalog.push(newMeme);
 
-    saveJson(`${__basedir}/constants/audio_catalog.json`, audio_catalog)
+    saveJson(`${__basedir}/constants/audio_catalog.json`, pushCatalog(audio_catalog, newMeme))
     new ScissorsMe(url, newMeme.time.start, newMeme.time.end, command);
     // cutVideo(url, Number(start), Number(end), __basedir, id);
     message.channel.send('olha o bixo vinu');

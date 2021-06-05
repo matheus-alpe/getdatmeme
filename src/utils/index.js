@@ -60,6 +60,17 @@ function extractVideoId(url){
   return matches && matches[1]
 }
 
+function pushCatalog(catalog, newMeme) {
+  const index = catalog.findIndex(({ _id }) => _id === newMeme._id)
+  if (index !== -1) {
+    catalog.splice(index, 1, newMeme)
+    return catalog
+  }
+
+  catalog.push(newMeme);
+  return catalog
+}
+
 function saveJson(path, content) {
   console.log(1);
   writeFileSync(path, JSON.stringify(content, null, 4));
@@ -84,5 +95,6 @@ module.exports = {
   downloadAudio,
   getMemesFolder,
   extractVideoId,
+  pushCatalog,
   saveJson
 }
