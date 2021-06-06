@@ -2,16 +2,16 @@
   "name": "getdatmeme",
   "version": "1.0.0",
   "description": "A Discord bot that execute audio memes.",
+  "author": "Matheus Alpe < palhoca@milgraul.com >",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node ./src/index.js",
     "dev": "nodemon ./src/index.js",
-    "clean": "rm -rf ./src/memes_audio/* && rm -rf ./src/temp/*"
+    "clean": "rm -rf ./src/memes_audio/* && rm -rf ./src/temp/*",
+    "lint": "npx eslint src/**.js",
+    "lint:fix": "npx eslint src/**.js --fix"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
   "dependencies": {
     "@discordjs/opus": "^0.5.0",
     "@ffmpeg-installer/ffmpeg": "^1.0.20",
@@ -23,6 +23,12 @@
     "ytdl-core": "^4.8.0"
   },
   "devDependencies": {
+    "eslint": "^7.28.0",
+    "eslint-config-airbnb-base": "^14.2.1",
+    "eslint-plugin-import": "^2.23.4",
     "nodemon": "^2.0.7"
+  },
+  "engines": {
+    "node": ">= 10"
   }
 }
