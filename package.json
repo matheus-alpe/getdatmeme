@@ -9,8 +9,8 @@
     "start": "node ./src/index.js",
     "dev": "nodemon ./src/index.js",
     "clean": "rm -rf ./src/memes_audio/* && rm -rf ./src/temp/*",
-    "lint": "npx eslint src/**.js",
-    "lint:fix": "npx eslint src/**.js --fix"
+    "lint": "./node_modules/.bin/eslint src/**.js",
+    "lint:fix": "./node_modules/.bin/eslint src/**.js --fix"
   },
   "dependencies": {
     "@discordjs/opus": "^0.5.0",
