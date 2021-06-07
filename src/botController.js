@@ -1,17 +1,29 @@
-
+const event = require('events');
+const emitter = new event.EventEmitter();
 
 const audio_catalog = require("./constants/audio_catalog.json");
-const { getNormalizedCommand, getMemeFile, checkAudio, downloadAudio, getMemesFolder, extractVideoId, saveJson, pushCatalog } = require("./utils")
+const {
+  getNormalizedCommand,
+  getMemeFile,
+  checkAudio,
+  setupAudio,
+  getMemesFolder,
+  extractVideoId,
+  saveJson,
+  pushCatalog
+} = require("./utils")
 const errors = require('./utils/errors')
-// const { cutVideo } = require('./utils/ScissorMe');
-const { ScissorsMe } = require('../src/ScissormeOld');
+const { ScissorsMe } = require('./lib/ScissormeOld');
 
 const WRONG_CMD_MESSAGES = [
   'erou',
   'naoconsegue',
   'taburro'
 ]
+
+
 module.exports = class BotController {
+
   constructor(prefix) {
     this.prefix = prefix;
     this.queue = new Map();
@@ -28,20 +40,24 @@ module.exports = class BotController {
     if (checkAudio(command)) {
       this._execute(message, serverQueue);
     } else {
-      const commandsMap = {
-        'setup': () => downloadAudio(message),
-        'list': () => this._listMemes(message),
-        'skip': () => this._skip(message, serverQueue),
-        'stop': () => this._stop(message, serverQueue),
-        '20g': () => message.channel.send("Ta brincando com minha cara né?!!!!!"),
-        'new': () => {this._addNewMeme(message, args)},
-        'default': () => this._defaultErrorMessage(message, serverQueue)
-      }
-
-      let handler = commandsMap[command];
-      handler = handler ? handler : commandsMap['default'];
-      handler();
+      const handler = this._getCommand(command);
+      handler({ message, serverQueue, args });
     }
+  }
+
+  _getCommand(command) {
+    const commandsMap = {
+      'setup': ({ message }) => setupAudio(message),
+      'list': ({ message }) => this._listMemes(message),
+      'skip': ({ message, serverQueue }) => this._skip(message, serverQueue),
+      'stop': ({ message, serverQueue }) => this._stop(message, serverQueue),
+      '20g': () => message.channel.send("Ta brincando com minha cara né?!!!!!"),
+      'new': ({ message, serverQueue, args }) => this._addNewMeme(message, args),
+      'default': ({ message, serverQueue }) => this._defaultErrorMessage(message, serverQueue)
+    }
+
+    const handler = commandsMap[command];
+    return handler ? handler : commandsMap['default'];
   }
 
   async _execute(message, serverQueue) {
@@ -158,12 +174,14 @@ module.exports = class BotController {
       message.channel.send("precisa passar os comandos certos")
       return;
     }
+
     const [url, command, start, end] = args
     const id = extractVideoId(url);
     if (!id) {
       message.channel.send('Não encontramos o vídeo');
       return;
     }
+    
     const newMeme = {
       url: id,
       _id: command,
@@ -174,9 +192,11 @@ module.exports = class BotController {
       }
     };
 
-    saveJson(`${__basedir}/constants/audio_catalog.json`, pushCatalog(audio_catalog, newMeme))
-    new ScissorsMe(url, newMeme.time.start, newMeme.time.end, command);
-    // cutVideo(url, Number(start), Number(end), __basedir, id);
+    emitter.removeAllListeners('notification');
+    emitter.on('notification', (data) => message.channel.send(data));
+
+    saveJson(`${__basedir}/constants/audio_catalog.json`, pushCatalog(audio_catalog, newMeme));
+    new ScissorsMe(url, newMeme.time.start, newMeme.time.end, command, emitter);
     message.channel.send('olha o bixo vinu');
   }
 }
