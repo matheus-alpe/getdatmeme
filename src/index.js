@@ -1,3 +1,4 @@
+require('dotenv').config();
 const ffmpegPath = require("@ffmpeg-installer/ffmpeg").path;
 const ffmpeg = require("fluent-ffmpeg");
 ffmpeg.setFfmpegPath(ffmpegPath);
@@ -29,4 +30,4 @@ client.on("message", async (message) => {
     controller.handleMessage(message)
 });
 
-client.login(token);
+client.login(process.env.TOKEN);

@@ -16,6 +16,7 @@
     "@discordjs/opus": "^0.5.0",
     "@ffmpeg-installer/ffmpeg": "^1.0.20",
     "discord.js": "^12.5.3",
+    "dotenv": "^10.0.0",
     "ffmpeg": "^0.0.4",
     "ffmpeg-static": "^4.3.0",
     "fluent-ffmpeg": "^2.1.2",
