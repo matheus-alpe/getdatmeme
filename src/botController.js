@@ -107,6 +107,10 @@ module.exports = class BotController {
   }
 
   _skip(message, serverQueue) {
+    if (!serverQueue) {
+      return;
+    }
+
     if (!message.member.voice.channel) {
       errors.needToBeInAVoiceChannelError(message);
     } else if (!serverQueue) {
@@ -116,6 +120,10 @@ module.exports = class BotController {
   }
 
   _stop(message, serverQueue) {
+    if (!serverQueue) {
+      return;
+    }
+    
     if (!message.member.voice.channel) {
       errors.needToBeInAVoiceChannelError(message);
     } else if (!serverQueue) {
