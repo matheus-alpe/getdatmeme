@@ -10,8 +10,8 @@ import '../types';
  * Return a string escaping all characters.
  * @param {string} string
  * @returns {string}
- */
-function getEscapedString(string) {
+ export */
+export function getEscapedString(string) {
   let escapedString = '';
 
   for (const char of string) {
@@ -22,22 +22,26 @@ function getEscapedString(string) {
 }
 
 /**
- * Return the command without the prefix.
+ * Returns the command without the prefix.
  *
  * @param {string} command
  * @return {string}
  */
-function getNormalizedCommand(command, prefix = process.env.PREFIX) {
+export function getNormalizedCommand(command, prefix = process.env.PREFIX) {
   const escapedPrefix = getEscapedString(prefix);
-
   const regex = new RegExp(`^${escapedPrefix}`, 'g');
   return command.replace(regex, '');
 }
 
-function getMemeFile(command) {
-  const audio = audioCatalog.find(({ _id }) => _id === command);
+/**
+ *
+ * @param {string} memeId Id of a given meme
+ * @returns
+ */
+export function getMemeFile(memeId, files = audioCatalog) {
+  const audio = files.find(({ _id }) => _id === memeId);
 
-  if (audio && !audio.file) {
+  if (!audio?.file) {
     throw new Error('Não existe esse audio de meme');
   }
 
@@ -46,32 +50,49 @@ function getMemeFile(command) {
 
 /**
  * Return the meme folder.
- * @returns { string }
+ * @returns Memes folder path
  */
-function getMemesFolder() {
-  return path.join(__dirname, 'memes_audio');
+export function getMemesFolder() {
+  return path.join(process.cwd(), 'memes_audio');
 }
 
-function _getDownloadedAudios() {
-  return fs.readdirSync(getMemesFolder());
+/**
+ *
+ * @returns A list of downloaded audios
+ */
+export function getDownloadedAudios() {
+  const memesFolder = getMemesFolder();
+  return fs.readdirSync(memesFolder);
 }
 
-function checkAudio(normalizedCommand) {
-  return Boolean(audioCatalog.find(({ _id }) => _id === normalizedCommand));
+/**
+ * Checks if the audio catalog has a given audio id
+ *
+ * @param {string} audioId
+ * @returns
+ */
+export function checkAudio(audioId) {
+  return audioCatalog.includes(audioId);
 }
 
-function extractVideoId(url) {
+/**
+ * Returns a YouTube video url key as in '?v=...' for a given url
+ *
+ * @param {string} url
+ * @returns
+ */
+export function extractVideoId(url) {
   const matches = url.match(/\?v=(.*)/);
-  return matches && matches[1];
+  return matches ? matches[1] : null;
 }
 
 /**
  * Verifies if has a meme with that id on catalog.
  * If has, replaces it. If don't, than pushes to array.
  *
- * @param { Meme[] } catalog
- * @param { Meme } newMeme
- * @return { Meme[] }
+ * @param {Meme[]} catalog
+ * @param {Meme} newMeme
+ * @return {Meme[]}
  */
 function pushCatalog(catalog, newMeme) {
   const index = catalog.findIndex(({ _id }) => _id === newMeme._id);
@@ -87,10 +108,10 @@ function pushCatalog(catalog, newMeme) {
 /**
  * Creates a file in the directory specified with the past content.
  *
- * @param { string } path
- * @param { string } content
+ * @param {string} path
+ * @param {string} content
  */
-function saveJson(path, content) {
+export function saveJson(path, content) {
   fs.writeFileSync(path, JSON.stringify(content, null, 4));
 }
 
@@ -99,8 +120,8 @@ function saveJson(path, content) {
  *
  * @param {*} message
  */
-function setupAudio(message) {
-  const preDownloadedAudios = _getDownloadedAudios();
+export function setupAudio(message) {
+  const preDownloadedAudios = getDownloadedAudios();
   audioCatalog.forEach(audio => {
     if (!preDownloadedAudios.includes(audio.file)) {
       console.log(`baixando ${audio._id}`);
@@ -114,14 +135,3 @@ function setupAudio(message) {
   });
   message.channel.send('fazendo setup');
 }
-
-module.exports = {
-  getNormalizedCommand,
-  getMemeFile,
-  checkAudio,
-  setupAudio,
-  getMemesFolder,
-  extractVideoId,
-  pushCatalog,
-  saveJson,
-};

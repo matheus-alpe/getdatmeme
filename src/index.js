@@ -9,7 +9,7 @@ import BotController from '@controllers/bot-controller';
 import { configureClient } from '@config/index';
 
 // ? Is this necessary?
-// global.__basedir = __dirname;
+global.__basedir = __dirname;
 
 dotenv.config();
 ffmpeg.setFfmpegPath(ffmpegPath);

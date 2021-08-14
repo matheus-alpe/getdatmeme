@@ -1,4 +1,4 @@
-import { getRandomArrayElement } from '../../helpers/arrays';
+import { getRandomArrayElement } from '@helpers/arrays';
 
 describe('Tests the "src/helpers/arrays" file', () => {
   it('should return a random element of the array', () => {
