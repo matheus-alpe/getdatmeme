@@ -1,17 +1,15 @@
-const ffmpegPath = require("@ffmpeg-installer/ffmpeg").path;
-const ffmpeg = require("fluent-ffmpeg");
+const ffmpegPath = require('@ffmpeg-installer/ffmpeg').path;
+const ffmpeg = require('fluent-ffmpeg');
 ffmpeg.setFfmpegPath(ffmpegPath);
 
-const { existsSync, mkdirSync, unlink } = require("fs");
-const ytdl = require("ytdl-core");
-const { cut } = require("mp3-cutter");
+const { existsSync, mkdirSync, unlink } = require('fs');
+const ytdl = require('ytdl-core');
+const { cut } = require('mp3-cutter');
 
-
-
-class ScissorsMe {
+export default class ScissorsMe {
   constructor(url, start = 0, end, id, emitter) {
     if (!url) {
-      console.error("Missing `URL` parameter.");
+      console.error('Missing `URL` parameter.');
     }
 
     this._id = id;
@@ -38,7 +36,7 @@ class ScissorsMe {
   async getVideo() {
     try {
       let stream = await ytdl(this._url, {
-        quality: "highestaudio",
+        quality: 'highestaudio',
       });
 
       this.saveAudio(stream);
@@ -51,7 +49,7 @@ class ScissorsMe {
     await ffmpeg(stream)
       .audioBitrate(128)
       .save(`${this._tempPath}/${this._id}.mp3`)
-      .on("end", () => {
+      .on('end', () => {
         this.audioCutter();
       });
   }
@@ -75,11 +73,12 @@ class ScissorsMe {
     }
 
     cut(options);
-    unlink(options.src, (err) => { if (err) throw err });
-    this._emitter.emit('notification', `Comando **?${this._id}** pronto para uso!`)
+    unlink(options.src, err => {
+      if (err) throw err;
+    });
+    this._emitter.emit(
+      'notification',
+      `Comando **?${this._id}** pronto para uso!`
+    );
   }
 }
-
-module.exports = {
-  ScissorsMe,
-};

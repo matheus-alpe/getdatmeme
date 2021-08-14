@@ -1,13 +1,15 @@
-const ffmpegPath = require("@ffmpeg-installer/ffmpeg").path;
-const ffmpeg = require("fluent-ffmpeg");
-const ytdl = require("ytdl-core");
-const { cut } = require("mp3-cutter");
-const { unlink, resolve } = require("fs");
-const { mkdirIfNotExists } = require("./helpers/file-system");
+import fs from 'fs';
+import path from 'path';
+import ffmpeg from 'fluent-ffmpeg';
+import ytdl from 'ytdl-core';
+import { cut as cutMP3 } from 'mp3-cutter';
+import { path as ffmpegPath } from '@ffmpeg-installer/ffmpeg';
+
+import { mkdirIfNotExists } from '@helpers/file-system';
 
 ffmpeg.setFfmpegPath(ffmpegPath);
 
-class ScissorsMe {
+export default class AudioController {
   /**
    *
    * @param {string} url
@@ -18,8 +20,8 @@ class ScissorsMe {
   constructor(url, start = 0, end, id) {
     if (!url) {
       // ! Throw an error, maybe?
-      // throw new Error("A url was not provided");
-      console.error("Missing `URL` parameter.");
+      // throw new Error('Missing a "URL" parameter');
+      console.error('Missing "URL" parameter.');
       return;
     }
 
@@ -27,8 +29,8 @@ class ScissorsMe {
     this._url = url;
     this._startTime = start;
     this._endTime = end;
-    this._tempPath = resolve(__dirname, "temp");
-    this._memesPath = resolve(__dirname, "memes_audio");
+    this._tempPath = path.join(__dirname, 'temp');
+    this._memesPath = path.join(__dirname, 'memes_audio');
 
     this.makeDirectories();
     this.getVideo();
@@ -40,8 +42,8 @@ class ScissorsMe {
 
   async getVideo() {
     try {
-      let stream = await ytdl(this._url, {
-        quality: "highestaudio",
+      const stream = await ytdl(this._url, {
+        quality: 'highestaudio',
       });
 
       this.saveAudio(stream);
@@ -51,16 +53,16 @@ class ScissorsMe {
   }
 
   async saveAudio(stream) {
-    const audioPathname = resolve(this._tempPath, `${this._id}.mp3`);
+    const audioFilePath = path.join(this._tempPath, `${this._id}.mp3`);
 
     await ffmpeg(stream)
       .audioBitrate(128)
-      .save(audioPathname)
-      .on("end", this.audioCutter);
+      .save(audioFilePath)
+      .on('end', this.audioCutter);
   }
 
   /**
-   * Cut audio given a start and end time.
+   * Cuts an audio given a start and end time.
    */
   audioCutter() {
     if (this._checkIfStartTimeIsGreaterThanEndTime()) {
@@ -69,21 +71,19 @@ class ScissorsMe {
 
     const options = this._audioOptionsFactory();
 
-    cut(options);
-    unlink(options.src, (err) => {
-      if (err) throw err;
+    cutMP3(options);
+
+    fs.unlink(options.src, error => {
+      if (error) throw error;
     });
   }
 
-  /**
-   * @returns {AudioOptionsType}
-   */
   _audioOptionsFactory() {
     const audioFilePath = `${this._id}.mp3`;
 
     return {
-      src: resolve(this._tempPath, audioFilePath),
-      target: resolve(this._memesPath, audioFilePath),
+      src: path.join(this._tempPath, audioFilePath),
+      target: path.join(this._memesPath, audioFilePath),
       start: this._startTime,
       end: this._endTime ? this._endTime : null,
     };
@@ -98,5 +98,3 @@ class ScissorsMe {
     [this._startTime, this._endTime] = [this._endTime, this._startTime];
   }
 }
-
-module.exports = ScissorsMe;

@@ -1,5 +1,6 @@
-{   
-    "ignore": [
-        "src/constants/audio_catalog.json"
-    ] 
+{
+  "ignore": ["src/constants/audio_catalog.json"],
+  "execMap": {
+    "js": "sucrase-node"
+  }
 }

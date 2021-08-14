@@ -1,8 +1,6 @@
-const event = require("events");
-const emitter = new event.EventEmitter();
+import events from 'events';
 
-const audio_catalog = require("./constants/audio_catalog.json");
-const {
+import {
   getNormalizedCommand,
   getMemeFile,
   checkAudio,
@@ -11,32 +9,57 @@ const {
   extractVideoId,
   saveJson,
   pushCatalog,
-} = require("./utils");
-const errors = require("./utils/errors");
-const ScissorsMe = require("./lib/ScissormeOld");
+} from '@utils/index';
+import * as discordErrors from '@errors/discord-errors';
+import audioCatalog from '@constants/audio_catalog.json';
+import AudioController from '@controllers/audio-controller';
+import { getRandomArrayElement } from '@helpers/arrays';
 
-const WRONG_CMD_MESSAGES = ["erou", "naoconsegue", "taburro"];
+const emitter = new events.EventEmitter();
+const WRONG_CMD_MESSAGES = ['erou', 'naoconsegue', 'taburro'];
 
-class BotController {
-  constructor(prefix) {
+export default class BotController {
+  /**
+   * Generates a new bot controller
+   *
+   * @param {string} prefix Bot controller prefix, the standard prefix is "?".
+   */
+  constructor(prefix = '?') {
     this.prefix = prefix;
     this.queue = new Map();
   }
 
+  /**
+   * Handles the user command
+   *
+   * @param {string} message
+   * @returns
+   */
   handleMessage(message) {
-    if (message.author.bot) return;
-    if (!message.content.startsWith(this.prefix)) return;
+    if (!this._isAValidCommand(message)) return;
 
     const serverQueue = this.queue.get(message.guild.id);
 
     const normalizedCommand = getNormalizedCommand(message.content);
-    const [command, ...args] = normalizedCommand.split(" ");
+    const [command, ...args] = normalizedCommand.split(' ');
+
     if (checkAudio(command)) {
       this._execute(message, serverQueue);
-    } else {
-      const handler = this._getCommand(command);
-      handler({ message, serverQueue, args });
+      return;
     }
+
+    const handler = this._getCommand(command);
+    handler({ message, serverQueue, args });
+  }
+
+  /**
+   * @param {DiscordMessageType} message
+   * @returns A boolean value indicating if the command is valid or not
+   */
+  _isAValidCommand(message) {
+    // If the message author is the bot itself or it doesn't start with
+    // the predefined prefix
+    return !message.author.bot || message.content.startsWith(this.prefix);
   }
 
   _getCommand(command) {
@@ -45,14 +68,14 @@ class BotController {
       list: ({ message }) => this._listMemes(message),
       skip: ({ message, serverQueue }) => this._skip(message, serverQueue),
       stop: ({ message, serverQueue }) => this._stop(message, serverQueue),
-      "20g": () => message.channel.send("Ta brincando com minha cara né?!!!!!"),
+      '20g': () => message.channel.send('Ta brincando com minha cara né?!!!!!'),
       new: ({ message, serverQueue, args }) => this._addNewMeme(message, args),
       default: ({ message, serverQueue }) =>
         this._defaultErrorMessage(message, serverQueue),
     };
 
     const handler = commandsMap[command];
-    return handler ? handler : commandsMap["default"];
+    return handler ? handler : commandsMap['default'];
   }
 
   async _execute(message, serverQueue) {
@@ -60,12 +83,13 @@ class BotController {
 
     const voiceChannel = message.member.voice.channel;
     if (!voiceChannel) {
-      errors.needToBeInAVoiceChannelError(message);
+      discordErrors.needToBeInAVoiceChannelError(message);
     }
 
     const permissions = voiceChannel.permissionsFor(message.client.user);
-    if (!permissions.has("CONNECT") || !permissions.has("SPEAK")) {
-      errors.botWithoutPermissionError(message);
+
+    if (!permissions.has('CONNECT') || !permissions.has('SPEAK')) {
+      discordErrors.botWithoutPermissionError(message);
     }
 
     const song = getMemeFile(normalizedCommand);
@@ -105,9 +129,9 @@ class BotController {
     }
 
     if (!message.member.voice.channel) {
-      errors.needToBeInAVoiceChannelError(message);
+      discordErrors.needToBeInAVoiceChannelError(message);
     } else if (!serverQueue) {
-      errors.anySongToSkipError(message);
+      discordErrors.anySongToSkipError(message);
     }
     serverQueue.connection.dispatcher.end();
   }
@@ -118,9 +142,9 @@ class BotController {
     }
 
     if (!message.member.voice.channel) {
-      errors.needToBeInAVoiceChannelError(message);
+      discordErrors.needToBeInAVoiceChannelError(message);
     } else if (!serverQueue) {
-      errors.anySongToSkipError(message);
+      discordErrors.anySongToSkipError(message);
     }
 
     serverQueue.songs = [];
@@ -137,11 +161,11 @@ class BotController {
 
     const dispatcher = serverQueue.connection
       .play(`${getMemesFolder()}/${song.file}`)
-      .on("finish", () => {
+      .on('finish', () => {
         serverQueue.songs.shift();
         this._play(guild, serverQueue.songs[0]);
       })
-      .on("error", (error) => console.error(error));
+      .on('error', error => console.error(error));
     dispatcher.setVolumeLogarithmic(serverQueue.volume / 5);
     serverQueue.textChannel.send(`Start playing: **${song._id}**`);
   }
@@ -155,30 +179,29 @@ class BotController {
      * @returns {string[]}
      */
     const getAllMemes = () => {
-      return audio_catalog.map((audio) => `${this.prefix}${audio._id}`).sort();
+      return audioCatalog.map(audio => `${this.prefix}${audio._id}`).sort();
     };
-    message.channel.send(getAllMemes().join("\n"));
+    message.channel.send(getAllMemes().join('\n'));
   }
 
   _defaultErrorMessage(message, serverQueue) {
-    const errorMessage =
-      WRONG_CMD_MESSAGES[Math.floor(Math.random() * WRONG_CMD_MESSAGES.length)];
-    const audio = audio_catalog.find((audio) => audio._id === errorMessage);
+    const errorMessage = getRandomArrayElement(WRONG_CMD_MESSAGES);
+    const audio = audioCatalog.find(audio => audio._id === errorMessage);
     message.content = `?${audio._id}`;
     this._execute(message, serverQueue);
-    errors.invalidCommandError(message);
+    discordErrors.invalidCommandError(message);
   }
 
   _addNewMeme(message, args) {
     if (args.length < 3 || args.length < 4) {
-      message.channel.send("precisa passar os comandos certos");
+      message.channel.send('precisa passar os comandos certos');
       return;
     }
 
     const [url, command, start, end] = args;
     const id = extractVideoId(url);
     if (!id) {
-      message.channel.send("Não encontramos o vídeo");
+      message.channel.send('Não encontramos o vídeo');
       return;
     }
 
@@ -192,16 +215,20 @@ class BotController {
       },
     };
 
-    emitter.removeAllListeners("notification");
-    emitter.on("notification", (data) => message.channel.send(data));
+    emitter.removeAllListeners('notification');
+    emitter.on('notification', data => message.channel.send(data));
 
     saveJson(
       `${__basedir}/constants/audio_catalog.json`,
-      pushCatalog(audio_catalog, newMeme)
+      pushCatalog(audioCatalog, newMeme)
     );
-    new ScissorsMe(url, newMeme.time.start, newMeme.time.end, command, emitter);
-    message.channel.send("olha o bixo vinu");
+    new AudioController(
+      url,
+      newMeme.time.start,
+      newMeme.time.end,
+      command,
+      emitter
+    );
+    message.channel.send('olha o bixo vinu');
   }
 }
-
-module.exports = BotController;

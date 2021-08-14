@@ -1,33 +1,22 @@
-require("dotenv").config();
+import './config/path-aliases';
 
-const ffmpegPath = require("@ffmpeg-installer/ffmpeg").path;
-const ffmpeg = require("fluent-ffmpeg");
-const Discord = require("discord.js");
+import discord from 'discord.js';
+import dotenv from 'dotenv';
+import ffmpeg from 'fluent-ffmpeg';
+import { path as ffmpegPath } from '@ffmpeg-installer/ffmpeg';
 
-const BotController = require("./botController");
-const { prefix, token } = require("./config.json");
+import BotController from '@controllers/bot-controller';
+import { configureClient } from '@config/index';
 
 // ? Is this necessary?
-global.__basedir = __dirname;
+// global.__basedir = __dirname;
 
+dotenv.config();
 ffmpeg.setFfmpegPath(ffmpegPath);
-const client = new Discord.Client();
-const controller = new BotController(prefix);
 
-client.once("ready", () => {
-  console.log("Ready!");
+const client = new discord.Client();
+const controller = new BotController(process.env.PREFIX);
+
+configureClient(client, controller, {
+  token: process.env.TOKEN,
 });
-
-client.once("reconnecting", () => {
-  console.log("Reconnecting!");
-});
-
-client.once("disconnect", () => {
-  console.log("Disconnect!");
-});
-
-client.on("message", async (message) => {
-  controller.handleMessage(message);
-});
-
-client.login(process.env.TOKEN);
