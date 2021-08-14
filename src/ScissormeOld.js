@@ -1,37 +1,41 @@
 const ffmpegPath = require("@ffmpeg-installer/ffmpeg").path;
 const ffmpeg = require("fluent-ffmpeg");
-ffmpeg.setFfmpegPath(ffmpegPath);
-
-const { existsSync, mkdirSync, unlink } = require("fs");
 const ytdl = require("ytdl-core");
 const { cut } = require("mp3-cutter");
+const { unlink, resolve } = require("fs");
+const { mkdirIfNotExists } = require("./helpers/file-system");
 
-
+ffmpeg.setFfmpegPath(ffmpegPath);
 
 class ScissorsMe {
+  /**
+   *
+   * @param {string} url
+   * @param {number} start
+   * @param {number} end
+   * @param {string} id
+   */
   constructor(url, start = 0, end, id) {
     if (!url) {
+      // ! Throw an error, maybe?
+      // throw new Error("A url was not provided");
       console.error("Missing `URL` parameter.");
+      return;
     }
 
     this._id = id;
     this._url = url;
     this._startTime = start;
     this._endTime = end;
-    this._tempPath = `${__dirname}/temp`;
-    this._memesPath = `${__dirname}/memes_audio`;
+    this._tempPath = resolve(__dirname, "temp");
+    this._memesPath = resolve(__dirname, "memes_audio");
 
     this.makeDirectories();
     this.getVideo();
   }
-  makeDirectories() {
-    if (!existsSync(this._tempPath)) {
-      mkdirSync(this._tempPath);
-    }
 
-    if (!existsSync(this._memesPath)) {
-      mkdirSync(this._memesPath);
-    }
+  makeDirectories() {
+    mkdirIfNotExists(this._tempPath, this._memesPath);
   }
 
   async getVideo() {
@@ -47,37 +51,52 @@ class ScissorsMe {
   }
 
   async saveAudio(stream) {
+    const audioPathname = resolve(this._tempPath, `${this._id}.mp3`);
+
     await ffmpeg(stream)
       .audioBitrate(128)
-      .save(`${this._tempPath}/${this._id}.mp3`)
-      .on("end", () => {
-        this.audioCutter();
-      });
+      .save(audioPathname)
+      .on("end", this.audioCutter);
   }
 
   /**
    * Cut audio given a start and end time.
    */
   audioCutter() {
-    if (this._endTime && this._startTime > this._endTime) {
-      [this._startTime, this._endTime] = [this._endTime, this._startTime];
+    if (this._checkIfStartTimeIsGreaterThanEndTime()) {
+      this._swapStartAndEndTime();
     }
 
-    const options = {
-      src: `${this._tempPath}/${this._id}.mp3`,
-      target: `${this._memesPath}/${this._id}.mp3`,
-      start: this._startTime,
-    };
-
-    if (this._endTime) {
-      options.end = this._endTime;
-    }
+    const options = this._audioOptionsFactory();
 
     cut(options);
-    unlink(options.src, (err) => { if (err) throw err });
+    unlink(options.src, (err) => {
+      if (err) throw err;
+    });
+  }
+
+  /**
+   * @returns {AudioOptionsType}
+   */
+  _audioOptionsFactory() {
+    const audioFilePath = `${this._id}.mp3`;
+
+    return {
+      src: resolve(this._tempPath, audioFilePath),
+      target: resolve(this._memesPath, audioFilePath),
+      start: this._startTime,
+      end: this._endTime ? this._endTime : null,
+    };
+  }
+
+  _checkIfStartTimeIsGreaterThanEndTime() {
+    return this._endTime && this._startTime > this._endTime;
+  }
+
+  _swapStartAndEndTime() {
+    // This is pretty cool, I didn't know you could do this in JS.
+    [this._startTime, this._endTime] = [this._endTime, this._startTime];
   }
 }
 
-module.exports = {
-  ScissorsMe,
-};
+module.exports = ScissorsMe;

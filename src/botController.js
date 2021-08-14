@@ -1,4 +1,4 @@
-const event = require('events');
+const event = require("events");
 const emitter = new event.EventEmitter();
 
 const audio_catalog = require("./constants/audio_catalog.json");
@@ -10,20 +10,14 @@ const {
   getMemesFolder,
   extractVideoId,
   saveJson,
-  pushCatalog
-} = require("./utils")
-const errors = require('./utils/errors')
-const { ScissorsMe } = require('./lib/ScissormeOld');
+  pushCatalog,
+} = require("./utils");
+const errors = require("./utils/errors");
+const ScissorsMe = require("./lib/ScissormeOld");
 
-const WRONG_CMD_MESSAGES = [
-  'erou',
-  'naoconsegue',
-  'taburro'
-]
+const WRONG_CMD_MESSAGES = ["erou", "naoconsegue", "taburro"];
 
-
-module.exports = class BotController {
-
+class BotController {
   constructor(prefix) {
     this.prefix = prefix;
     this.queue = new Map();
@@ -36,7 +30,7 @@ module.exports = class BotController {
     const serverQueue = this.queue.get(message.guild.id);
 
     const normalizedCommand = getNormalizedCommand(message.content);
-    const [command, ...args] = normalizedCommand.split(' ');
+    const [command, ...args] = normalizedCommand.split(" ");
     if (checkAudio(command)) {
       this._execute(message, serverQueue);
     } else {
@@ -47,17 +41,18 @@ module.exports = class BotController {
 
   _getCommand(command) {
     const commandsMap = {
-      'setup': ({ message }) => setupAudio(message),
-      'list': ({ message }) => this._listMemes(message),
-      'skip': ({ message, serverQueue }) => this._skip(message, serverQueue),
-      'stop': ({ message, serverQueue }) => this._stop(message, serverQueue),
-      '20g': () => message.channel.send("Ta brincando com minha cara né?!!!!!"),
-      'new': ({ message, serverQueue, args }) => this._addNewMeme(message, args),
-      'default': ({ message, serverQueue }) => this._defaultErrorMessage(message, serverQueue)
-    }
+      setup: ({ message }) => setupAudio(message),
+      list: ({ message }) => this._listMemes(message),
+      skip: ({ message, serverQueue }) => this._skip(message, serverQueue),
+      stop: ({ message, serverQueue }) => this._stop(message, serverQueue),
+      "20g": () => message.channel.send("Ta brincando com minha cara né?!!!!!"),
+      new: ({ message, serverQueue, args }) => this._addNewMeme(message, args),
+      default: ({ message, serverQueue }) =>
+        this._defaultErrorMessage(message, serverQueue),
+    };
 
     const handler = commandsMap[command];
-    return handler ? handler : commandsMap['default'];
+    return handler ? handler : commandsMap["default"];
   }
 
   async _execute(message, serverQueue) {
@@ -76,7 +71,7 @@ module.exports = class BotController {
     const song = getMemeFile(normalizedCommand);
 
     if (!serverQueue) {
-      const queueContruct = {
+      const queueConstruct = {
         textChannel: message.channel,
         voiceChannel: voiceChannel,
         connection: null,
@@ -85,14 +80,14 @@ module.exports = class BotController {
         playing: true,
       };
 
-      this.queue.set(message.guild.id, queueContruct);
+      this.queue.set(message.guild.id, queueConstruct);
 
-      queueContruct.songs.push(song);
+      queueConstruct.songs.push(song);
 
       try {
         const connection = await voiceChannel.join();
-        queueContruct.connection = connection;
-        this._play(message.guild, queueContruct.songs[0]);
+        queueConstruct.connection = connection;
+        this._play(message.guild, queueConstruct.songs[0]);
       } catch (err) {
         console.log(err);
         this.queue.delete(message.guild.id);
@@ -100,9 +95,7 @@ module.exports = class BotController {
       }
     } else {
       serverQueue.songs.push(song);
-      return message.channel.send(
-        `${song._id} has been added to the queue!`
-      );
+      return message.channel.send(`${song._id} has been added to the queue!`);
     }
   }
 
@@ -123,7 +116,7 @@ module.exports = class BotController {
     if (!serverQueue) {
       return;
     }
-    
+
     if (!message.member.voice.channel) {
       errors.needToBeInAVoiceChannelError(message);
     } else if (!serverQueue) {
@@ -162,16 +155,15 @@ module.exports = class BotController {
      * @returns {string[]}
      */
     const getAllMemes = () => {
-      return audio_catalog
-        .map(audio => `${this.prefix}${audio._id}`)
-        .sort();
-    }
-    message.channel.send(getAllMemes().join('\n'));
+      return audio_catalog.map((audio) => `${this.prefix}${audio._id}`).sort();
+    };
+    message.channel.send(getAllMemes().join("\n"));
   }
 
   _defaultErrorMessage(message, serverQueue) {
-    const errorMessage = WRONG_CMD_MESSAGES[Math.floor(Math.random() * WRONG_CMD_MESSAGES.length)]
-    const audio = audio_catalog.find(audio => audio._id === errorMessage);
+    const errorMessage =
+      WRONG_CMD_MESSAGES[Math.floor(Math.random() * WRONG_CMD_MESSAGES.length)];
+    const audio = audio_catalog.find((audio) => audio._id === errorMessage);
     message.content = `?${audio._id}`;
     this._execute(message, serverQueue);
     errors.invalidCommandError(message);
@@ -179,32 +171,37 @@ module.exports = class BotController {
 
   _addNewMeme(message, args) {
     if (args.length < 3 || args.length < 4) {
-      message.channel.send("precisa passar os comandos certos")
+      message.channel.send("precisa passar os comandos certos");
       return;
     }
 
-    const [url, command, start, end] = args
+    const [url, command, start, end] = args;
     const id = extractVideoId(url);
     if (!id) {
-      message.channel.send('Não encontramos o vídeo');
+      message.channel.send("Não encontramos o vídeo");
       return;
     }
-    
+
     const newMeme = {
       url: id,
       _id: command,
       file: `${command}.mp3`,
       time: {
-          start: Number(start),
-          end: Number(end)
-      }
+        start: Number(start),
+        end: Number(end),
+      },
     };
 
-    emitter.removeAllListeners('notification');
-    emitter.on('notification', (data) => message.channel.send(data));
+    emitter.removeAllListeners("notification");
+    emitter.on("notification", (data) => message.channel.send(data));
 
-    saveJson(`${__basedir}/constants/audio_catalog.json`, pushCatalog(audio_catalog, newMeme));
+    saveJson(
+      `${__basedir}/constants/audio_catalog.json`,
+      pushCatalog(audio_catalog, newMeme)
+    );
     new ScissorsMe(url, newMeme.time.start, newMeme.time.end, command, emitter);
-    message.channel.send('olha o bixo vinu');
+    message.channel.send("olha o bixo vinu");
   }
 }
+
+module.exports = BotController;
