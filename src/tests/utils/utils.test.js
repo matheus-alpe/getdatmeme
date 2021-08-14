@@ -36,4 +36,26 @@ describe('Tests the "src/utils/index" file', () => {
 
     expect(result).toBe(EXPECTED_RESULT);
   });
+
+  it('should return the video url', () => {
+    const EXPECTED_RESULT = 'hello%20world';
+    const result = utils.extractVideoId(
+      'https://youtube.com/watch?v=hello%20world'
+    );
+
+    expect(result).toBe(EXPECTED_RESULT);
+  });
+
+  it('should return a new array with the given new meme', () => {
+    const MEMES = [
+      { _id: 1, name: 'foo' },
+      { _id: 2, name: 'bar' },
+    ];
+    const NEW_MEME = { _id: 1, name: 'baz' };
+    const EXPECTED_RESULT = [NEW_MEME, MEMES[1]];
+
+    const result = utils.pushCatalog(MEMES, NEW_MEME);
+
+    expect(result).toStrictEqual(EXPECTED_RESULT);
+  });
 });

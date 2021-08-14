@@ -94,7 +94,7 @@ export function extractVideoId(url) {
  * @param {Meme} newMeme
  * @return {Meme[]}
  */
-function pushCatalog(catalog, newMeme) {
+export function pushCatalog(catalog, newMeme) {
   const index = catalog.findIndex(({ _id }) => _id === newMeme._id);
   if (index !== -1) {
     catalog.splice(index, 1, newMeme);
