@@ -730,15 +730,6 @@
     },
     {
         "url": "1Kys9jSLx4Q",
-        "_id": "chega",
-        "file": "chega.mp3",
-        "time": {
-            "start": 57,
-            "end": 61.5
-        }
-    },
-    {
-        "url": "1Kys9jSLx4Q",
         "_id": "cocotinhos",
         "file": "cocotinhos.mp3",
         "time": {
@@ -797,6 +788,195 @@
         "file": "seupai.mp3",
         "time": {
             "start": 7,
+            "end": 0
+        }
+    },
+    {
+        "url": "1Kys9jSLx4Q",
+        "_id": "chega",
+        "file": "chega.mp3",
+        "time": {
+            "start": 57,
+            "end": 61.5
+        }
+    },
+    {
+        "url": "5ayiynE_T1A",
+        "_id": "odeiohoraextra",
+        "file": "odeiohoraextra.mp3",
+        "time": {
+            "start": 0,
+            "end": 6.5
+        }
+    },
+    {
+        "url": "5ayiynE_T1A",
+        "_id": "horaextra",
+        "file": "horaextra.mp3",
+        "time": {
+            "start": 166,
+            "end": 171
+        }
+    },
+    {
+        "url": "mqWqrmsS-uU",
+        "_id": "teste1",
+        "file": "teste1.mp3",
+        "time": {
+            "start": 2,
+            "end": 5
+        }
+    },
+    {
+        "url": "Vvt7ahwhpbU",
+        "_id": "bahmeu",
+        "file": "bahmeu.mp3",
+        "time": {
+            "start": 11,
+            "end": 24
+        }
+    },
+    {
+        "url": "wsjWlReqZcE",
+        "_id": "talimpo",
+        "file": "talimpo.mp3",
+        "time": {
+            "start": 4,
+            "end": 5
+        }
+    },
+    {
+        "url": "F_JvDYOXKL4",
+        "_id": "seubuceta",
+        "file": "seubuceta.mp3",
+        "time": {
+            "start": 0,
+            "end": 0
+        }
+    },
+    {
+        "url": "pqA4l4UPPcU",
+        "_id": "danran",
+        "file": "danran.mp3",
+        "time": {
+            "start": 0,
+            "end": 9
+        }
+    },
+    {
+        "url": "h_9ATQFgu9o",
+        "_id": "ahgay",
+        "file": "ahgay.mp3",
+        "time": {
+            "start": 0,
+            "end": 3
+        }
+    },
+    {
+        "url": "3Oxt-7VW1p8",
+        "_id": "muitochato",
+        "file": "muitochato.mp3",
+        "time": {
+            "start": 0,
+            "end": 8
+        }
+    },
+    {
+        "url": "3weq6kmUJf0",
+        "_id": "comjogos",
+        "file": "comjogos.mp3",
+        "time": {
+            "start": 2,
+            "end": 10
+        }
+    },
+    {
+        "url": "bp_T4KJ6xuk",
+        "_id": "shoto",
+        "file": "shoto.mp3",
+        "time": {
+            "start": 1.5,
+            "end": 4
+        }
+    },
+    {
+        "url": "Ac3lzdQ4q7c",
+        "_id": "p0",
+        "file": "p0.mp3",
+        "time": {
+            "start": 143,
+            "end": 151
+        }
+    },
+    {
+        "url": "azQmA1EMi5w",
+        "_id": "chaleira",
+        "file": "chaleira.mp3",
+        "time": {
+            "start": 0,
+            "end": 23
+        }
+    },
+    {
+        "url": "azQmA1EMi5w",
+        "_id": "chaleira2",
+        "file": "chaleira2.mp3",
+        "time": {
+            "start": 14,
+            "end": 23
+        }
+    },
+    {
+        "url": "6fkG7vT9eGc",
+        "_id": "rapadura",
+        "file": "rapadura.mp3",
+        "time": {
+            "start": 0,
+            "end": 3
+        }
+    },
+    {
+        "url": "DCmh5fvgqq4",
+        "_id": "pornhub",
+        "file": "pornhub.mp3",
+        "time": {
+            "start": 0,
+            "end": 2
+        }
+    },
+    {
+        "url": "8Ul12Ed3PKs",
+        "_id": "vaisefude",
+        "file": "vaisefude.mp3",
+        "time": {
+            "start": 51,
+            "end": 55
+        }
+    },
+    {
+        "url": "8Ul12Ed3PKs",
+        "_id": "minhamarreta",
+        "file": "minhamarreta.mp3",
+        "time": {
+            "start": 59,
+            "end": 66
+        }
+    },
+    {
+        "url": "drDSvWVMVKU",
+        "_id": "goiaba",
+        "file": "goiaba.mp3",
+        "time": {
+            "start": 0,
+            "end": 37
+        }
+    },
+    {
+        "url": "hrdPqXa9wYY",
+        "_id": "opa",
+        "file": "opa.mp3",
+        "time": {
+            "start": 0,
             "end": 0
         }
     }
